@@ -6,7 +6,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_jb"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_jb_foreground"
+        android:roundIcon="@mipmap/ic_jb_round"
         android:screenOrientation="landscape"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

@@ -2,15 +2,11 @@ package com.jblandii.juegojam;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -18,20 +14,20 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.io.IOException;
-
 public class BreakoutGame extends Activity {
 
-    // gameView will be the view of the game
-    // It will also hold the logic of the game
-    // and respond to screen touches as well
+    /*
+    gameView será la vista del juego y tambien mantiene la lógica del juego.
+     */
     BreakoutView breakoutView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize gameView and set it as the view
+        /*
+         Inicializo gameView y lo establezco como vista.
+         */
         breakoutView = new BreakoutView(this);
         setContentView(breakoutView);
 
@@ -48,7 +44,7 @@ public class BreakoutGame extends Activity {
         Se necesita un SurfaceHolder.
         Cuando usamos Paint y Canvas en un hilo.
         */
-        SurfaceHolder ourHolder;
+        SurfaceHolder myHolder;
 
         /*
         Boleano para saber si el juego está en ejecución o no.
@@ -88,9 +84,11 @@ public class BreakoutGame extends Activity {
          */
         Bola ball;
 
-        // Up to 200 bricks
-        Ladrillo[] bricks = new Ladrillo[200];
-        int numBricks = 0;
+        /*
+        Hasta 200 ladrillos
+         */
+        Ladrillo[] arrayLadrillos = new Ladrillo[200];
+        int numeroLadrillos = 0;
 
         /*
         Puntuación, Vidas.
@@ -110,7 +108,7 @@ public class BreakoutGame extends Activity {
             /*
             Inicializo los Objetos Holder y Paint.
              */
-            ourHolder = getHolder();
+            myHolder = getHolder();
             paint = new Paint();
 
             /*
@@ -147,11 +145,11 @@ public class BreakoutGame extends Activity {
             /*
             Construyo una pared de ladrillos.
              */
-            numBricks = 0;
+            numeroLadrillos = 0;
             for (int column = 0; column < 8; column++) {
                 for (int row = 0; row < 3; row++) {
-                    bricks[numBricks] = new Ladrillo(row, column, brickWidth, brickHeight);
-                    numBricks++;
+                    arrayLadrillos[numeroLadrillos] = new Ladrillo(row, column, brickWidth, brickHeight);
+                    numeroLadrillos++;
                 }
             }
 
@@ -208,16 +206,15 @@ public class BreakoutGame extends Activity {
             Mueve la paleta si es necesario.
              */
             paleta.update(fps);
-
             ball.update(fps);
 
             /*
             Compruebo si la bola colisiona con un ladrillo
              */
-            for (int i = 0; i < numBricks; i++) {
-                if (bricks[i].getVisibility()) {
-                    if (RectF.intersects(bricks[i].getRect(), ball.getRect())) {
-                        bricks[i].setInvisible();
+            for (int i = 0; i < numeroLadrillos; i++) {
+                if (arrayLadrillos[i].getVisibility()) {
+                    if (RectF.intersects(arrayLadrillos[i].getRect(), ball.getRect())) {
+                        arrayLadrillos[i].setInvisible();
                         ball.reverseYVelocity();
                         puntuacion = puntuacion + 10;
                     }
@@ -280,7 +277,7 @@ public class BreakoutGame extends Activity {
             /*
             Pausa el juego si se queda sin ladrillos.
              */
-            if (puntuacion == numBricks * 10) {
+            if (puntuacion == numeroLadrillos * 10) {
                 pausado = true;
                 createBricksAndRestart();
             }
@@ -295,16 +292,16 @@ public class BreakoutGame extends Activity {
             /*
             Me aseguro de que la superficie del dibujo sea válida o se colapsa.
              */
-            if (ourHolder.getSurface().isValid()) {
+            if (myHolder.getSurface().isValid()) {
                 /*
                 Bloqueo el lienzo listo para dibujar.
                  */
-                canvas = ourHolder.lockCanvas();
+                canvas = myHolder.lockCanvas();
 
                 /*
                 Dibujo el color de fondo.
                  */
-                canvas.drawColor(Color.argb(255, 26, 128, 182));
+                canvas.drawColor(Color.argb(255, 0, 0, 0));
 
                 /*
                 Elijo el color del pincel para dibujar.
@@ -325,14 +322,14 @@ public class BreakoutGame extends Activity {
                 /*
                 Cambio el color del pincel para dibujar.
                  */
-                paint.setColor(Color.argb(255, 249, 129, 0));
+                paint.setColor(Color.argb(255, 249, 0, 121));
 
                 /*
                 Dibujo los ladrillos si son visibles.
                  */
-                for (int i = 0; i < numBricks; i++) {
-                    if (bricks[i].getVisibility()) {
-                        canvas.drawRect(bricks[i].getRect(), paint);
+                for (int i = 0; i < numeroLadrillos; i++) {
+                    if (arrayLadrillos[i].getVisibility()) {
+                        canvas.drawRect(arrayLadrillos[i].getRect(), paint);
                     }
                 }
 
@@ -345,14 +342,14 @@ public class BreakoutGame extends Activity {
                 Dibujo la puntuación
                  */
                 paint.setTextSize(40);
-                canvas.drawText("Score: " + puntuacion + "   Lives: " + vidas, 10, 50, paint);
+                canvas.drawText("Puntuación: " + puntuacion + "   Vidas: " + vidas, 10, 50, paint);
 
                 /*
                 Compruebo si el jugador ha eliminado todos los ladrillos.
                  */
-                if (puntuacion == numBricks * 10) {
+                if (puntuacion == numeroLadrillos * 10) {
                     paint.setTextSize(90);
-                    canvas.drawText("YOU HAVE WON!", 10, screenY / 2, paint);
+                    canvas.drawText("Has ganado!", 10, screenY / 2, paint);
                 }
 
                 /*
@@ -360,13 +357,13 @@ public class BreakoutGame extends Activity {
                  */
                 if (vidas <= 0) {
                     paint.setTextSize(90);
-                    canvas.drawText("YOU HAVE LOST!", 10, screenY / 2, paint);
+                    canvas.drawText("Has perdido!", 10, screenY / 2, paint);
                 }
 
                 /*
                 Dibujo en la pantalla.
                  */
-                ourHolder.unlockCanvasAndPost(canvas);
+                myHolder.unlockCanvasAndPost(canvas);
             }
 
         }
@@ -405,9 +402,9 @@ public class BreakoutGame extends Activity {
                 case MotionEvent.ACTION_DOWN:
                     pausado = false;
                     if (motionEvent.getX() > screenX / 2) {
-                        paleta.setMovementState(paleta.RIGHT);
+                        paleta.setMovementState(paleta.DERECHA);
                     } else {
-                        paleta.setMovementState(paleta.LEFT);
+                        paleta.setMovementState(paleta.IZQUIERDA);
                     }
                     break;
                 /*
@@ -415,13 +412,14 @@ public class BreakoutGame extends Activity {
                  */
                 case MotionEvent.ACTION_UP:
 
-                    paleta.setMovementState(paleta.STOPPED);
+                    paleta.setMovementState(paleta.PARADO);
                     break;
             }
             return true;
         }
 
     }
+
     /*
     Este es el final de la clase interna BreakoutView. Este método se ejecuta cuando el jugador inicia el juego.
     */
